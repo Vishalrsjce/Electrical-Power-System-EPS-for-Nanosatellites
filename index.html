@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FYP Technical Report: Nanosatellite EPS - Weakypedia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<nav class="sidebar">
+    <div class="sidebar-logo">Weakypedia</div>
+    <div class="sidebar-header">Contents</div>
+    <ul>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#introduction">1 Introduction</a>
+            <ul>
+                <li><a href="#motivation">1.2 Motivation</a></li>
+                <li><a href="#problem">1.3 Problem Statement</a></li>
+                <li><a href="#block-diagram">1.4 Block Diagram</a></li>
+            </ul>
+        </li>
+        <li><a href="#literature">2 Literature Review</a></li>
+        <li><a href="#hardware-req">3 Present Work: Hardware</a>
+            <ul>
+                <li><a href="#solar-array">3.1.1 Solar Array</a></li>
+                <li><a href="#mppt-module">3.1.2 MPPT Module</a></li>
+                <li><a href="#battery-module">3.1.3 Charging</a></li>
+                <li><a href="#lithium-pack">3.1.4 Battery Pack</a></li>
+                <li><a href="#arduino-uno">3.1.6 Arduino</a></li>
+            </ul>
+        </li>
+        <li><a href="#software-req">3.2 Software</a></li>
+        <li><a href="#sim-results">4 Results: Simulation</a>
+            <ul>
+                <li><a href="#iv-pv-curves">4.1.1 I-V/P-V Curves</a></li>
+                <li><a href="#buck-boost-math">4.1.3 Design Math</a></li>
+            </ul>
+        </li>
+        <li><a href="#hardware-performance">4.2 Hardware Testing</a></li>
+        <li><a href="#conclusion">5 Conclusion</a></li>
+        <li><a href="#future-scope">6 Future Scope</a></li>
+        <li><a href="#references">References</a></li>
+    </ul>
+</nav>
+
+<!-- ONE SINGLE MAIN CONTENT CONTAINER -->
+<div class="main-content">
+    <div class="top-banner">From Weakypedia, the free project encyclopedia</div>
+    <h1 id="title">Electrical Power System (EPS) for Nanosatellites</h1>
+    
+    <p class="summary-line">
+        The <b>Nanosatellite Electrical Power System (EPS)</b> is a miniaturized power management unit designed to harness, store, and distribute energy in space environments. Developed as a pedagogical and scalable prototype, it integrates <b>Maximum Power Point Tracking (MPPT)</b> and stabilized voltage regulation.
+    </p>
+
+    <!-- Project Infobox -->
+    <aside class="infobox">
+        <div class="infobox-title">Project Specifications</div>
+        <div class="infobox-img">
+            <img src="fig1_1.png" alt="General Block Diagram">
+            <p>Figure 1.1: Functional architecture of the EPS node.</p>
+        </div>
+        <table>
+            <tr><th>Application</th><td>Nanosatellite / CubeSat</td></tr>
+            <tr><th>Solar Output</th><td>~12 Watts Peak</td></tr>
+            <tr><th>Battery Pack</th><td>2S2P Lithium-Ion (7.4V)</td></tr>
+            <tr><th>Logic Controller</th><td>Arduino Uno (ATmega328P)</td></tr>
+            <tr><th>MPPT Algorithm</th><td>Perturb and Observe (P&O)</td></tr>
+            <tr><th>Voltage Rails</th><td>3.3V, 5.0V Regulated</td></tr>
+        </table>
+    </aside>
+
+    <!-- ABSTRACT -->
+    <section id="abstract">
+        <h2>Abstract</h2>
+        <hr>
+        <p>
+            This project report covers the design, simulation, and demonstration of a prototype Design of an Electrical Power System (EPS) suitable for nanosatellite application. The primary objective was to build a small, cheap, uniform system to absorb solar energy, charge the battery efficiently, and distribute controlled power to onboard subsystems. The EPS features a photovoltaic panel, 2S2P Lithium-Ion battery pack, and MPPT control. Major findings verify the viability of the integrated solution with room for future potential in space-grade component integration.
+        </p>
+    </section>
+
+    <!-- CHAPTER 1: INTRODUCTION -->
+    <section id="introduction">
+        <h2>1. Introduction</h2>
+        <hr>
+        <h3 id="preamble">1.1 Preamble</h3>
+        <p>The Electrical Power System (EPS) is an important subsystem in every satellite used to generate, store, control, and distribute electrical power. In the case of nano-satellites, where size and weight are of utmost importance, the design of an effective and robust EPS is a difficult exercise.</p>
+
+        <h3 id="motivation">1.2 Motivation</h3>
+        <p>With the enhanced need for reduced-weight space missions, nanosatellites are subject to rigorous size, weight, and power (SWaP) constraints. This project seeks to design such a system with the inclusion of MPPT for the best possible solar power harvesting and Lithium-Ion batteries for assured storage.</p>
+
+        <h3 id="problem">1.3 Problem Statement</h3>
+        <p>The design of an optimized EPS for nanosatellites is a multidimensional challenge:</p>
+        <ul>
+            <li>Limited surface area for solar panels in orbital environments.</li>
+            <li>On-board systems demand several levels of voltage (3.3V, 5V) to function.</li>
+            <li>Requirement for space-efficient power distribution units tolerant of faults.</li>
+        </ul>
+
+        <h3 id="block-diagram">1.4 Block Diagram</h3>
+        <div class="technical-figure">
+            <img src="fig1_1.png" alt="Block Diagram of EPS">
+            <p class="caption"><b>Figure 1.1:</b> General Block Diagram showing the flow from Solar Panels to the Subsystems.</p>
+        </div>
+    </section>
+
+    <!-- CHAPTER 2: LITERATURE REVIEW -->
+    <section id="literature">
+        <h2>2. Literature Review</h2>
+        <hr>
+        <p>Maximum Power Point Trackers (MPPT) techniques have garnered broad research to maximize solar panel power extraction. According to J. Lee et al. [5], Perturb & Observe (P&O) is an effective performer in obtaining the highest energy yield in the face of light dynamic changes.</p>
+
+        <h3 id="review-summary">2.2 Summary of Literature Review</h3>
+        <table class="data-table">
+            <thead>
+                <tr><th>EPS Aspect</th><th>Common Approaches</th><th>Identified Gaps</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Power Generation</td><td>Solar panels with MPPT logic.</td><td>Predominantly theoretical analysis.</td></tr>
+                <tr><td>Energy Storage</td><td>Lithium-ion batteries and BMS.</td><td>Need for replicable battery designs.</td></tr>
+                <tr><td>Power Regulation</td><td>Buck/Boost converters.</td><td>Few holistic designs integrate all stages.</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- CHAPTER 3: PRESENT WORK CARRIED OUT -->
+    <section id="hardware-req">
+        <h2>3. Present Work Carried Out</h2>
+        <hr>
+        
+        <h3 id="solar-array">3.1.1 Solar Panel Array</h3>
+        <div class="wiki-thumb-right">
+            <img src="fig3_1.png" alt="Solar Panel">
+            <div class="thumb-caption"><b>Figure 3.1:</b> Solar Panel Array Configuration.</div>
+        </div>
+        <p>The array achieved a confirmed peak power output of around 13–14 Watts. This capacity is essential for charging the energy accumulator while meeting onboard system demands.</p>
+
+        <h3 id="mppt-module">3.1.2 MPPT Module</h3>
+        <div class="wiki-thumb-left">
+            <img src="fig3_2.png" alt="MPPT Module">
+            <div class="thumb-caption"><b>Figure 3.2:</b> MPPT Circuit Diagram with PO Algorithm.</div>
+        </div>
+        <p>To maximize energy, an MPPT module is integrated. It utilizes an adjustable voltage buck converter stage driven by an onboard microcontroller running the P&O algorithm.</p>
+
+        <h3 id="battery-module">3.1.3 Battery Charging Module</h3>
+        <div class="wiki-thumb-right">
+            <img src="fig3_3.png" alt="Charging Module">
+            <div class="thumb-caption"><b>Figure 3.3:</b> Battery Charging Module.</div>
+        </div>
+        <p>A dedicated module ensures safe charging of the pack, protecting it from potentially damaging conditions like over-discharge or thermal runaway.</p>
+
+        <h3 id="lithium-pack">3.1.4 Lithium-Ion Battery Pack</h3>
+        <div class="wiki-thumb-left">
+            <img src="fig3_4.png" alt="Li-Ion Battery">
+            <div class="thumb-caption"><b>Figure 3.4:</b> 2S2P Lithium-ion Battery configuration.</div>
+        </div>
+        <p>For this prototype, the pack is configured as a 2S2P (2 cells in series, 2 sets in parallel), resulting in a nominal voltage of 7.4V and a maximum charge voltage of 8.4V.</p>
+
+        <h3 id="voltage-reg">3.1.5 Voltage Regulators</h3>
+        <div class="wiki-thumb-right">
+            <img src="fig3_5.png" alt="Voltage Regulator">
+            <div class="thumb-caption"><b>Figure 3.5:</b> Voltage regulator providing 3.3V/5V.</div>
+        </div>
+        <p>To meet specific voltage requirements, dedicated regulators are employed downstream from the converter and the battery pack.</p>
+
+        <h3 id="arduino-uno">3.1.6 Arduino Uno (Microcontroller)</h3>
+        <div class="wiki-thumb-left">
+            <img src="fig3_6.png" alt="Arduino Uno">
+            <div class="thumb-caption"><b>Figure 3.6:</b> A Picture of Arduino Uno.</div>
+        </div>
+        <p>A key feature integrated is a real-time monitoring system built around an Arduino-compatible board and a 16x2 LCD module.</p>
+    </section>
+
+    <!-- SECTION 3.2: SOFTWARE REQUIREMENTS -->
+    <section id="software-req">
+        <h2>3.2 Software Requirements</h2>
+        <hr>
+        <p>The selection of software was guided by engineering workflows in power electronics:</p>
+        <ul>
+            <li><b>MATLAB/Simulink:</b> Modeling I-V and P-V characteristics of the solar array.</li>
+            <li><b>Proteus:</b> Detailed circuit-level simulation and visual verification.</li>
+            <li><b>Arduino IDE:</b> Programming embedded control and monitoring functionalities.</li>
+            <li><b>MS Excel / Google Sheets:</b> Power budgeting and logging experimental data.</li>
+        </ul>
+    </section>
+
+    <!-- CHAPTER 4: RESULTS AND DISCUSSIONS -->
+    <section id="sim-results">
+        <h2>4. Results and Discussions</h2>
+        <hr>
+
+        <h3 id="iv-pv-curves">4.1.1 I-V and P-V Characteristics</h3>
+        <div class="technical-figure">
+            <img src="fig4_1.png" alt="Simulink Circuit" style="max-width: 100%;">
+            <p class="caption"><b>Figure 4.1:</b> Simulink simulated circuit for the proposed EPS system.</p>
+        </div>
+        <div class="wiki-image-grid">
+            <div class="grid-item-wiki">
+                <img src="fig4_3.png" alt="I-V Curve">
+                <p>Figure 4.3: Simulated I-V Curve.</p>
+            </div>
+            <div class="grid-item-wiki">
+                <img src="fig4_4.png" alt="P-V Curve">
+                <p>Figure 4.4: Simulated P-V Curve.</p>
+            </div>
+        </div>
+
+        <h3 id="buck-boost-math">4.1.3 Buck-Boost Converter Design Math</h3>
+        <p>Key design equations for a buck-boost converter in Continuous Conduction Mode (CCM):</p>
+        <div class="wiki-math-box">
+            <div class="formula">Duty Cycle (D) = |V<sub>out</sub>| / (|V<sub>out</sub>| + V<sub>in</sub>)</div>
+            <p>For V<sub>out</sub> = 12V and V<sub>in</sub> = 2.41V, D ≈ 0.8327 (83.27%)</p>
+        </div>
+        <div class="wiki-thumb-right">
+            <img src="fig4_6.png" alt="Converter Sim">
+            <div class="thumb-caption"><b>Figure 4.6:</b> Simulink Model of the Buck-Boost Converter.</div>
+        </div>
+        <p>The simulated system demonstrated high efficiency (85-90%) across both buck and boost modes of operation.</p>
+    </section>
+
+    <!-- HARDWARE PERFORMANCE MODES -->
+    <section id="hardware-performance">
+        <h2>4.2 Hardware Demo: Operational Modes</h2>
+        <hr>
+        <p>The system is designed to operate in three modes: Normal, Experimental, and Eco.</p>
+        <div class="wiki-image-grid">
+            <div class="grid-item-wiki">
+                <img src="fig4_7.png" alt="Normal Mode">
+                <p><b>Fig 4.7: Normal Mode</b><br>LCD 8.4V (Standby)</p>
+            </div>
+            <div class="grid-item-wiki">
+                <img src="fig4_8.png" alt="Experimental Mode">
+                <p><b>Fig 4.8: Experimental Mode</b><br>Full workload active</p>
+            </div>
+            <div class="grid-item-wiki">
+                <img src="fig4_9.png" alt="Eco Mode">
+                <p><b>Fig 4.9: Eco Mode</b><br>Battery preservation</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHAPTER 5: CONCLUSION -->
+    <section id="conclusion">
+        <h2>5. Conclusion</h2>
+        <hr>
+        <p>This project successfully undertook the comprehensive design, rigorous simulation, and practical demonstration of an EPS tailored for nanosatellite applications. The primary objective was to develop an efficient system capable of generating, storing, and controlling electrical power.</p>
+
+        <h3 id="advantages">5.2.1 Advantages</h3>
+        <ul>
+            <li>Efficient Energy Harvesting via P&O MPPT logic.</li>
+            <li>Stable Voltage Regulation for sensitive electronic subsystems.</li>
+            <li>Real-Time Monitoring via 16x2 LCD module for hardware diagnostics.</li>
+        </ul>
+
+        <h3 id="limitations">5.2.2 Limitations</h3>
+        <div class="wiki-notice-box">
+            <b>Note:</b> The hardware implementation is limited to a ground-based demonstration model and has not undergone space qualification.
+        </div>
+    </section>
+
+    <!-- SECTION 6: FUTURE SCOPE -->
+    <section id="future-scope">
+        <h2>6. Future Scope</h2>
+        <hr>
+        <p>Future iterations could incorporate radio modules for telemetry, advanced MPPT algorithms (Fuzzy Logic), and hybrid storage solutions like supercapacitors to manage peak power demands.</p>
+    </section>
+
+    <!-- REFERENCES -->
+    <section id="references">
+        <h2>References</h2>
+        <hr>
+        <div class="reflist">
+            <p>[1] P. Rossoni, "Developments in Nano-Satellite Structural Subsystem Design," 1999.</p>
+            <p>[2] A. Edpuganti et al., "Comparison of Peak Power Tracking Based EPS Architectures," 2021.</p>
+            <p>[3] M. Chaturvedi, S. K. Singh, "Modeling of buck-boost converter for optimization," 2013.</p>
+            <p>[4] S. Ghosh and S. K. Saha, "Modelling and simulation of photovoltaic module," 2016.</p>
+        </div>
+    </section>
+
+    <footer class="wiki-footer">
+        Generated for FYP Submission | Final Prototype Recorded: March 24, 2026.
+    </footer>
+</div>
+
+<!-- SCROLLSPY SCRIPT -->
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            const id = entry.target.getAttribute('id');
+            if (entry.intersectionRatio > 0.1) {
+                document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+                const activeLink = document.querySelector(`.sidebar a[href="#${id}"]`);
+                if (activeLink) activeLink.classList.add('active');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('section').forEach(section => {
+        observer.observe(section);
+    });
+});
+</script>
+</body>
+</html>
